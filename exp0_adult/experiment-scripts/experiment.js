@@ -16,8 +16,8 @@ const MINI_PRACTICE_IMAGES_2 = [
   "stimuli/food/candy.jpg"
 ];
 
-const NUM_BLOCKS = 2;
-const TRIALS_PER_BLOCK = 6;
+const NUM_BLOCKS = 6;
+const TRIALS_PER_BLOCK = 2;
 const TOTAL_MAIN_TRIALS = NUM_BLOCKS * TRIALS_PER_BLOCK;   // 12 trials total
 
 let MAIN_BLOCKS = [];
@@ -963,17 +963,15 @@ const participant_info_trial = {
     const firstSetIndex  = useReverseSetOrder ? 1 : 0;
     const secondSetIndex = useReverseSetOrder ? 0 : 1;
 
-    /* Build MAIN_BLOCKS: 2 blocks × 6 categories.
-       Block 0 uses the "first" set for every category (based on setCondition).
-       Block 1 uses the "second" set for every category. */
-    MAIN_BLOCKS = [[], []];
+    /* Build MAIN_BLOCKS as one entry per category (block), each with 
+       the two shuffled image sets (trials 1 and 2 of that block).
+       Which set comes first within a block is determined by set_condition. */
+    MAIN_BLOCKS = [];
     randomizedCategoryOrder.forEach(category => {
-      MAIN_BLOCKS[0].push(
-        jsPsychInstance.randomization.shuffle([...CATEGORIES[category][firstSetIndex]])
-      );
-      MAIN_BLOCKS[1].push(
+      MAIN_BLOCKS.push([
+        jsPsychInstance.randomization.shuffle([...CATEGORIES[category][firstSetIndex]]),
         jsPsychInstance.randomization.shuffle([...CATEGORIES[category][secondSetIndex]])
-      );
+      ]);
     });
 
     /* ---------- BUILD MAIN TIMELINE ---------- */
@@ -982,7 +980,7 @@ const participant_info_trial = {
 
     for (let b = 0; b < NUM_BLOCKS; b++) {
 
-      // Simple block intro
+      // Block intro (per category)
       timeline.push({
         type: jsPsychHtmlButtonResponse,
         stimulus: `
@@ -991,8 +989,9 @@ const participant_info_trial = {
               Block ${b + 1} of ${NUM_BLOCKS}
             </div>
             <div style="font-size:18px;line-height:1.6;color:#333;">
-              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block,
-              one for each category. Take your time.
+              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block
+              using different pictures from the same category.
+              Please treat each arrangement independently.
             </div>
           </div>
         `,
@@ -1028,12 +1027,12 @@ const participant_info_trial = {
           type: jsPsychHtmlButtonResponse,
           stimulus: `
             <div style="max-width:700px;margin:auto;padding:60px 40px;text-align:center;">
-              <div style="font-size:24px;margin-bottom:20px;">
-                Block ${b + 1} complete — halfway done!
+              <div style="font-size:22px;margin-bottom:20px;">
+                Block ${b + 1} of ${NUM_BLOCKS} complete.
               </div>
               <div style="font-size:16px;color:#555;">
                 Take a short break if you'd like, then continue when you're ready.<br>
-                In the next block, you'll arrange the same categories again with different pictures.
+                The next block will use a different category of pictures.
               </div>
             </div>
           `,
@@ -1142,13 +1141,15 @@ const main_intro = {
         You're ready to begin the main task. There will be
         <strong>${NUM_BLOCKS} blocks</strong>, each with
         <strong>${TRIALS_PER_BLOCK} arrangements</strong>
-        (${TOTAL_MAIN_TRIALS} in total). Each block covers all six categories
-        once, using different pictures.
+        (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category,
+        and within a block the two arrangements use different pictures from
+        that category.
       </p>
       <p style="font-size:18px;">
         Remember: place pictures that <strong>go together close</strong>,
         and pictures that <strong>don't go together far apart</strong>.
-        Take as long as you need.
+        Please treat each arrangement as a fresh decision — don't try to
+        copy your previous layout.
       </p>
     </div>
   `,
@@ -1204,10 +1205,10 @@ const instructions_page = {
       </ul>
       <p style="font-size:18px;">
         You'll do a short practice round first so you can get a feel for
-        the task, then complete <strong>2 blocks of ${TRIALS_PER_BLOCK}
-        arrangements</strong> (${TOTAL_MAIN_TRIALS} in total).
-        Each block covers all ${TRIALS_PER_BLOCK} categories once, using
-        different pictures in each block.
+        the task, then complete <strong>${NUM_BLOCKS} blocks of
+        ${TRIALS_PER_BLOCK} arrangements</strong>
+        (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category
+        of pictures.
       </p>
       <p style="font-size:18px;color:#555;">
         Take your time. Once you place a picture, you can still drag it
