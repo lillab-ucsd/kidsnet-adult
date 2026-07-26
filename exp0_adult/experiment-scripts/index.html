@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  />
+  <title>Kids Semantic Network Demo</title>
+
+  <!-- Load jsPsych LOCALLY (no unpkg) -->
+  <script src="jspsych/jspsych.js"></script>
+  <link href="jspsych/jspsych.css" rel="stylesheet" />
+
+  <!-- Load plugins LOCALLY -->
+  <script src="jspsych/plugin-preload.js"></script>
+  <script src="jspsych/plugin-html-button-response.js"></script>
+  <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.1.3"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #f5f5f5;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+      overscroll-behavior: none;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    #jspsych-target {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+
+    .jspsych-display-element {
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+    }
+
+    .jspsych-content-wrapper {
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .jspsych-content {
+      width: 100%;
+      height: 100%;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      box-sizing: border-box;
+    }
+
+    .jspsych-html-button-response-stimulus {
+      display: block !important;
+      max-width: 900px;
+      margin: 0 auto 24px auto !important;
+      padding: 0 20px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .jspsych-html-button-response-button {
+      display: block !important;
+      width: 100%;
+      margin: 0 auto !important;
+      text-align: center;
+    }
+
+    .jspsych-html-button-response-button button {
+      display: inline-block !important;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      padding: 10px 22px;
+      border-radius: 12px;
+      border: 1px solid #888;
+      background: white;
+      cursor: pointer;
+    }
+
+    .jspsych-html-button-response-button button:active {
+      transform: scale(0.98);
+    }
+
+    .jspsych-content:has(.jspsych-html-button-response-stimulus) {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .stim-img {
+      position: absolute;
+      object-fit: contain;
+      transform: translate(-50%, -50%);
+      touch-action: none;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
+    .stim-img.dragging {
+      z-index: 9999;
+    }
+
+    .grid-line-v,
+    .grid-line-h {
+      position: absolute;
+      background: #cfcfcf;
+      pointer-events: none;
+    }
+
+    .task-btn {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      border-radius: 12px;
+      border: 1px solid #888;
+      background: white;
+      cursor: pointer;
+    }
+
+    .task-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="jspsych-target"></div>
+
+  <script src="experiment.js?v=42"></script>
+</body>
+</html>
