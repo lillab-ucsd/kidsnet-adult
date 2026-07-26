@@ -353,57 +353,13 @@ const TOPBAR_Y = 10;
       background: #cfcfcf;
       pointer-events: none;
     }
-
-    /* Persistent task-reminder banner ---------- */
-    #task-reminder-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #fff8e1;
-      border-bottom: 2px solid #f9c74f;
-      padding: 8px 20px;
-      text-align: center;
-      font-size: 14px;
-      color: #5a4300;
-      z-index: 10000;
-      font-family: Arial, sans-serif;
-      pointer-events: none;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-    #task-reminder-banner strong { color: #333; }
-    /* Push jsPsych content down so it doesn't sit under the banner */
-    body.reminder-visible #jspsych-target {
-      padding-top: 40px;
-      box-sizing: border-box;
-    }
   `;
   document.head.appendChild(style);
 })();
 
-/* Mount the reminder banner and toggle it depending on trial type */
-(function mountTaskReminder() {
-  const attach = () => {
-    if (document.getElementById("task-reminder-banner")) return;
-    const banner = document.createElement("div");
-    banner.id = "task-reminder-banner";
-    banner.innerHTML =
-      `Task reminder: Place pictures that <strong>go together</strong> close, ` +
-      `and pictures that <strong>don't go together</strong> far apart.`;
-    document.body.appendChild(banner);
-    document.body.classList.add("reminder-visible");
-  };
-  if (document.body) attach();
-  else document.addEventListener("DOMContentLoaded", attach);
-})();
-
-/* Helper: hide banner during welcome/finish, show during task */
-function setReminderVisible(visible) {
-  const banner = document.getElementById("task-reminder-banner");
-  if (!banner) return;
-  banner.style.display = visible ? "block" : "none";
-  document.body.classList.toggle("reminder-visible", visible);
-}
+/* setReminderVisible retained as a no-op so existing calls in the code
+   don't error. The reminder is now baked into the grid trial itself. */
+function setReminderVisible(_visible) { /* no-op */ }
 
 function getTaskScale() {
   const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
@@ -665,6 +621,25 @@ class EmotionGridPlugin {
             Continue
           </button>
         </div>
+      </div>
+
+      <div id="grid-reminder" style="
+        max-width:1100px;
+        margin:20px auto 30px auto;
+        padding:20px 30px;
+        text-align:center;
+        background:#fff8e1;
+        border:2px solid #f9c74f;
+        border-radius:12px;
+        font-family:Arial, sans-serif;
+        font-size:22px;
+        line-height:1.5;
+        color:#5a4300;
+      ">
+        <strong>Reminder:</strong> Place pictures that
+        <strong style="color:#333;">go together</strong> close to each other,
+        and pictures that
+        <strong style="color:#333;">don't go together</strong> far apart.
       </div>
     `;
 
