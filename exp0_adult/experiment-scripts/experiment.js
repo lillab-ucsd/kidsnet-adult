@@ -1446,7 +1446,7 @@ const finish_page = {
   on_start: function() { setReminderVisible(false); },
   on_finish: function() {
     // Replace with your actual Prolific completion URL:
-    window.location.href = "https://app.prolific.com/submissions/complete?cc=XXXXXX";
+    window.location.href = "https://app.prolific.com/submissions/complete?cc=C15NSPWS";
   }
 };
 
