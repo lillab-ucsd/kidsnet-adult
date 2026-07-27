@@ -1008,7 +1008,16 @@ const participant_info_trial = {
 
     for (let b = 0; b < NUM_BLOCKS; b++) {
 
-      // Block intro (per category)
+      const blockCategory = randomizedCategoryOrder[b];
+      const categoryHint = (blockCategory === "emotions")
+        ? `<div style="font-size:20px;line-height:1.6;color:#5a4300;
+                       background:#fff8e1;border:2px solid #f9c74f;
+                       border-radius:10px;padding:14px 20px;margin-top:20px;">
+             For this block, think about how these pictures go together
+             <strong>based on how they feel inside</strong>.
+           </div>`
+        : "";
+
       timeline.push({
         type: jsPsychHtmlButtonResponse,
         stimulus: `
@@ -1020,6 +1029,7 @@ const participant_info_trial = {
               You'll complete ${TRIALS_PER_BLOCK} arrangements in this block.
               Please treat each arrangement independently.
             </div>
+            ${categoryHint}
           </div>
         `,
         choices: ["Begin"]
@@ -1031,6 +1041,7 @@ const participant_info_trial = {
           jsPsychInstance.randomization.shuffle([...MAIN_BLOCKS[b][t]]);
 
         timeline.push(makePreviewPage(shuffledImages));
+
 
         timeline.push({
           type: EmotionGridPlugin,
