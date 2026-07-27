@@ -39,9 +39,20 @@ const sorting_correct_page = {
       <div style="
         font-size:36px;
         font-weight:700;
-        margin-bottom:40px;
+        margin-bottom:20px;
       ">
-        Put things that go together closer!
+        Group pictures like this
+      </div>
+
+      <div style="
+        max-width:900px;
+        font-size:23px;
+        line-height:1.55;
+        margin:0 auto 30px auto;
+        color:#333;
+      ">
+        Instead, group pictures so that <strong>pictures that go together are close
+        together</strong> and <strong>pictures that are different are far apart</strong>.
       </div>
 
       <div style="position:relative; width:80vw; max-width:1000px;">
@@ -101,9 +112,21 @@ const sorting_wrong_page = {
       <div style="
         font-size:36px;
         font-weight:700;
-        margin-bottom:40px;
+        margin-bottom:20px;
       ">
         Not like this
+      </div>
+
+      <div style="
+        max-width:1080px;
+        font-size:23px;
+        line-height:1.55;
+        margin:0 auto 30px auto;
+        color:#333;
+      ">
+        Do not stack pictures or place them evenly side by side.
+        When you arrange them this way, pictures that go togetherget separated
+        and pictures that are different end up next to each other.
       </div>
 
       <div style="position:relative; width:80vw; max-width:1000px;">
@@ -624,7 +647,7 @@ class EmotionGridPlugin {
       </div>
 
       <div id="grid-reminder" style="
-        max-width:1100px;
+        max-width:1200px;
         margin:20px auto 30px auto;
         padding:20px 30px;
         text-align:center;
@@ -632,14 +655,19 @@ class EmotionGridPlugin {
         border:2px solid #f9c74f;
         border-radius:12px;
         font-family:Arial, sans-serif;
-        font-size:22px;
+        font-size:24px;
         line-height:1.5;
         color:#5a4300;
       ">
         <strong>Reminder:</strong> Place pictures that
         <strong style="color:#333;">go together</strong> close to each other,
         and pictures that
-        <strong style="color:#333;">don't go together</strong> far apart.
+        <strong style="color:#333;">are different</strong> far apart.
+        <br>
+        <span style="font-size:20px;">
+          When you're satisfied with your arrangement, click
+          <strong style="color:#333;">Continue</strong>.
+        </span>
       </div>
     `;
 
@@ -984,11 +1012,11 @@ const participant_info_trial = {
       timeline.push({
         type: jsPsychHtmlButtonResponse,
         stimulus: `
-          <div style="max-width:700px;margin:auto;padding:40px;text-align:center;">
-            <div style="font-size:26px;margin-bottom:20px;">
+          <div style="max-width:900px;margin:auto;padding:40px;text-align:center;">
+            <div style="font-size:30px;margin-bottom:24px;">
               Block ${b + 1} of ${NUM_BLOCKS}
             </div>
-            <div style="font-size:18px;line-height:1.6;color:#333;">
+            <div style="font-size:22px;line-height:1.6;color:#333;">
               You'll complete ${TRIALS_PER_BLOCK} arrangements in this block
               using different pictures from the same category.
               Please treat each arrangement independently.
@@ -1026,11 +1054,11 @@ const participant_info_trial = {
         timeline.push({
           type: jsPsychHtmlButtonResponse,
           stimulus: `
-            <div style="max-width:700px;margin:auto;padding:60px 40px;text-align:center;">
-              <div style="font-size:22px;margin-bottom:20px;">
+            <div style="max-width:900px;margin:auto;padding:60px 40px;text-align:center;">
+              <div style="font-size:26px;margin-bottom:24px;">
                 Block ${b + 1} of ${NUM_BLOCKS} complete.
               </div>
-              <div style="font-size:16px;color:#555;">
+              <div style="font-size:20px;line-height:1.6;color:#555;">
                 Take a short break if you'd like, then continue when you're ready.<br>
                 The next block will use a different category of pictures.
               </div>
@@ -1042,12 +1070,15 @@ const participant_info_trial = {
     }
 
     jsPsychInstance.data.addProperties({
-      participant_id:   pid,
-      prolific_session: new URLSearchParams(window.location.search).get("SESSION_ID"),
-      prolific_study:   new URLSearchParams(window.location.search).get("STUDY_ID"),
-      set_condition:    setCondition,
-      category_order:   randomizedCategoryOrder.join(","),
-      study_version:    "adult_v1"
+      participant_id:    pid,
+      session_uuid:      "s_" + Math.random().toString(36).slice(2, 10)
+                              + "_" + Date.now().toString(36),
+      start_timestamp:   new Date().toISOString(),
+      prolific_session:  new URLSearchParams(window.location.search).get("SESSION_ID"),
+      prolific_study:    new URLSearchParams(window.location.search).get("STUDY_ID"),
+      set_condition:     setCondition,
+      category_order:    randomizedCategoryOrder.join(","),
+      study_version:     "adult_v1"
     });
 
     timeline.push(save_data);
@@ -1133,23 +1164,13 @@ const mini_practice_trial_2 = {
 const main_intro = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <div style="max-width:720px;margin:auto;padding:40px 20px;text-align:left;line-height:1.65;">
-      <h1 style="text-align:center;font-size:26px;margin-bottom:24px;">
-        Practice Complete
-      </h1>
-      <p style="font-size:18px;">
-        You're ready to begin the main task. There will be
-        <strong>${NUM_BLOCKS} blocks</strong>, each with
-        <strong>${TRIALS_PER_BLOCK} arrangements</strong>
-        (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category,
-        and within a block the two arrangements use different pictures from
-        that category.
-      </p>
-      <p style="font-size:18px;">
-        Remember: place pictures that <strong>go together close</strong>,
-        and pictures that <strong>don't go together far apart</strong>.
-        Please treat each arrangement as a fresh decision — don't try to
-        copy your previous layout.
+    <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Practice Complete</h1>
+      <p style="font-size:22px;">You're ready to begin the main task. There will be <strong>${NUM_BLOCKS} blocks</strong>, each with <strong>${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category, and within a block the two arrangements use different pictures from that category.</p>
+      <p style="font-size:22px;">Remember: place pictures that <strong>go together close</strong>, and pictures that <strong>are different far apart</strong>. Please treat each arrangement independently.</p>
+      <p style="font-size:22px;">
+        When you are <strong>satisfied with your arrangement</strong>, click
+        <strong>Continue</strong> to move to the next round.
       </p>
     </div>
   `,
@@ -1159,60 +1180,54 @@ const main_intro = {
 const welcome_page = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <div style="max-width:720px;margin:auto;padding:40px 20px;text-align:left;line-height:1.65;">
-      <h1 style="text-align:center;font-size:28px;margin-bottom:24px;">
-        Welcome
-      </h1>
-      <p style="font-size:18px;">
-        Thank you for taking part in this study. It should take approximately
-        <strong>15–20 minutes</strong> to complete.
-      </p>
-      <p style="font-size:18px;">
-        In this task, you will arrange sets of pictures on a grid based on
-        how you think they relate to one another. There are
-        <strong>no right or wrong answers</strong> — we're interested in your
-        own intuitions.
-      </p>
-      <p style="font-size:18px;">
-        Please complete the study in one sitting, on a device with a mouse
-        or touchscreen.
-      </p>
+    <div style="max-width:1080px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Welcome</h1>
+      <p style="font-size:22px;">Thank you for taking part in this study. It should take approximately <strong>15–20 minutes</strong> to complete.</p>
+      <p style="font-size:22px;">In this task, you will arrange sets of pictures on a grid based on how you think they relate to one another. There are <strong>no right or wrong answers</strong> — we're interested in your own intuitions.</p>
+      <p style="font-size:22px;">Please complete the study in one sitting, on a device with a mouse or touchscreen.</p>
     </div>
   `,
   choices: ["Continue"]
 };
 
-const instructions_page = {
+const instructions_page_1 = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <div style="max-width:720px;margin:auto;padding:40px 20px;text-align:left;line-height:1.65;">
-      <h1 style="text-align:center;font-size:26px;margin-bottom:24px;">
-        Instructions
-      </h1>
-      <p style="font-size:18px;">
-        On each round, you will see a set of pictures. Your task is to
-        <strong>drag each picture onto the grid</strong> so that:
-      </p>
-      <ul style="font-size:18px;">
-        <li style="margin-bottom:10px;">
-          Pictures that <strong>go together</strong> are placed
-          <strong>close to each other</strong>.
-        </li>
-        <li>
-          Pictures that <strong>don't go together</strong> are placed
-          <strong>far apart</strong>.
-        </li>
+    <div style="max-width:1080px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Instructions</h1>
+      <p style="font-size:22px;">On each round, you will see a set of pictures. Your task is to <strong>drag each picture onto the grid</strong>.</p>
+      <p style="font-size:22px;">You will do this by pressing and holding on a picture, moving it to where you want, and releasing.</p>
+    </div>
+  `,
+  choices: ["Continue"]
+};
+
+const instructions_page_2 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">How to Arrange the Pictures</h1>
+      <p style="font-size:22px;">As you place each picture, think about how it relates to the others already on the grid:</p>
+      <ul style="font-size:22px;">
+        <li style="margin-bottom:14px;">Pictures that <strong>go together</strong> should be placed <strong>close to each other</strong>.</li>
+        <li>Pictures that <strong>are different</strong> should be placed <strong>far apart</strong>.</li>
       </ul>
-      <p style="font-size:18px;">
-        You'll do a short practice round first so you can get a feel for
-        the task, then complete <strong>${NUM_BLOCKS} blocks of
-        ${TRIALS_PER_BLOCK} arrangements</strong>
-        (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category
-        of pictures.
-      </p>
-      <p style="font-size:18px;color:#555;">
-        Take your time. Once you place a picture, you can still drag it
-        again to adjust.
+      <p style="font-size:22px;">We'll show you an example of what to do and what not to do on the next two pages.</p>
+    </div>
+  `,
+  choices: ["Continue"]
+};
+
+const instructions_page_3 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Before You Begin</h1>
+      <p style="font-size:22px;">You'll do a short practice round first so you can get a feel for the task, then complete <strong>${NUM_BLOCKS} blocks of ${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category of pictures.</p>
+      <p style="font-size:22px;">Take your time. Once you place a picture, you can still drag it again to adjust it.</p>
+      <p style="font-size:22px;">
+        When you are <strong>satisfied with your arrangement</strong>, click
+        <strong>Continue</strong> to move to the next round.
       </p>
     </div>
   `,
@@ -1412,11 +1427,13 @@ const timeline = [
   participant_info_trial,     // silent auto-assign from URL params
   preload_trial,
   welcome_page,
-  instructions_page,
-  makePreviewPage(MINI_PRACTICE_IMAGES),
-  mini_practice_trial,
+  instructions_page_1,
+  instructions_page_2,
   sorting_wrong_page,
   sorting_correct_page,
+  instructions_page_3,
+  makePreviewPage(MINI_PRACTICE_IMAGES),
+  mini_practice_trial,
   main_intro
 ];
 
@@ -1431,12 +1448,12 @@ const save_data = {
 const finish_page = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <div style="max-width:720px;margin:auto;padding:60px 20px;text-align:center;line-height:1.65;">
-      <h1 style="font-size:28px;margin-bottom:24px;">Thank you!</h1>
-      <p style="font-size:18px;">
+    <div style="max-width:960px;margin:auto;padding:60px 30px;text-align:center;line-height:1.7;">
+      <h1 style="font-size:30px;margin-bottom:28px;">Thank you!</h1>
+      <p style="font-size:22px;">
         You have completed the study. Your responses have been saved.
       </p>
-      <p style="font-size:18px;">
+      <p style="font-size:22px;">
         Please click the button below to return to Prolific and confirm your
         submission.
       </p>
