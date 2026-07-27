@@ -1017,8 +1017,7 @@ const participant_info_trial = {
               Block ${b + 1} of ${NUM_BLOCKS}
             </div>
             <div style="font-size:22px;line-height:1.6;color:#333;">
-              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block
-              using different pictures from the same category.
+              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block.
               Please treat each arrangement independently.
             </div>
           </div>
@@ -1060,7 +1059,6 @@ const participant_info_trial = {
               </div>
               <div style="font-size:20px;line-height:1.6;color:#555;">
                 Take a short break if you'd like, then continue when you're ready.<br>
-                The next block will use a different category of pictures.
               </div>
             </div>
           `,
@@ -1166,7 +1164,7 @@ const main_intro = {
   stimulus: `
     <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Practice Complete</h1>
-      <p style="font-size:22px;">You're ready to begin the main task. There will be <strong>${NUM_BLOCKS} blocks</strong>, each with <strong>${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category, and within a block the two arrangements use different pictures from that category.</p>
+      <p style="font-size:22px;">You're ready to begin the main task. There will be <strong>${NUM_BLOCKS} blocks</strong>, each with <strong>${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category.</p>
       <p style="font-size:22px;">Remember: place pictures that <strong>go together close</strong>, and pictures that <strong>are different far apart</strong>. Please treat each arrangement independently.</p>
       <p style="font-size:22px;">
         When you are <strong>satisfied with your arrangement</strong>, click
@@ -1193,9 +1191,10 @@ const welcome_page = {
 const instructions_page_1 = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <div style="max-width:1080px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+    <div style="max-width:1100px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Instructions</h1>
-      <p style="font-size:22px;">On each round, you will see a set of pictures. Your task is to <strong>drag each picture onto the grid</strong>.</p>
+      <p style="font-size:22px;">On each round, you will first see a set of pictures. After pressing Start, you can begin arranging the pictures. </p>
+      <p style="font-size:22px;">Your task is to <strong>drag each picture onto the grid</strong>.</p>
       <p style="font-size:22px;">You will do this by pressing and holding on a picture, moving it to where you want, and releasing.</p>
     </div>
   `,
