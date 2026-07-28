@@ -1026,8 +1026,8 @@ const participant_info_trial = {
               Block ${b + 1} of ${NUM_BLOCKS}
             </div>
             <div style="font-size:22px;line-height:1.6;color:#333;">
-              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block.
-              Please treat each arrangement independently.
+              <p> You'll complete ${TRIALS_PER_BLOCK} arrangements in this block. </p>
+              <p> Please treat each arrangement independently. </p>
             </div>
             ${categoryHint}
           </div>
