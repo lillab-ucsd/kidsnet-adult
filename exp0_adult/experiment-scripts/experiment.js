@@ -32,7 +32,9 @@ const sorting_correct_page = {
       flex-direction:column;
       justify-content:center;
       align-items:center;
-      height:100vh;
+      min-height:100vh;
+      padding:30px 20px;
+      box-sizing:border-box;
       text-align:center;
     ">
 
@@ -97,79 +99,73 @@ const sorting_correct_page = {
   }
 };
 
-const sorting_wrong_page = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <div style="
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      text-align:center;
-    ">
+/* ─────────────────────────────────────────────────────────────────────────
+   WRONG EXAMPLE — split across three pages so no single screen is dense.
+   Same image each time; only the explanation changes.
+   ───────────────────────────────────────────────────────────────────────── */
 
+function makeWrongExampleStep(bodyHTML, buttonLabel = "Next") {
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
       <div style="
-        font-size:36px;
-        font-weight:700;
-        margin-bottom:20px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        min-height:100vh;
+        text-align:center;
       ">
-        Not like this
+        <div style="font-size:36px;font-weight:700;margin-bottom:18px;">
+          Not like this
+        </div>
+
+        <div style="max-width:1000px;font-size:24px;line-height:1.55;
+                    margin:0 auto 24px auto;color:#333;">
+          ${bodyHTML}
+        </div>
+
+        <div style="position:relative;width:80vw;max-width:900px;">
+          <img src="stimuli/examples/wrong_example.png"
+               style="width:100%;max-height:52vh;object-fit:contain;
+                      border:8px solid #d32f2f;">
+          <div style="position:absolute;top:-30px;right:-30px;font-size:90px;
+                      color:#d32f2f;font-weight:bold;">✗</div>
+        </div>
+
+        <button class="wrong-step-btn" style="
+          margin-top:32px;
+          font-size:24px;
+          padding:14px 40px;
+          border-radius:16px;
+          background:#4CAF50;
+          color:white;
+          border:none;
+          cursor:pointer;
+        ">${buttonLabel}</button>
       </div>
+    `,
+    choices: [],
+    on_load: function() {
+      document.querySelector(".wrong-step-btn")
+        .addEventListener("click", function() {
+          jsPsychInstance.finishTrial();
+        });
+    }
+  };
+}
 
-      <div style="
-        max-width:1080px;
-        font-size:23px;
-        line-height:1.55;
-        margin:0 auto 30px auto;
-        color:#333;
-      ">
-        Do not stack pictures or place them evenly side by side.
-        When you arrange them this way, pictures that go togetherget separated
-        and pictures that are different end up next to each other.
-      </div>
+const wrong_step_1 = makeWrongExampleStep(
+  `Look closely at what that does. The <strong>ice cream</strong> now sits right next to
+   the <strong>hamburger</strong>, and the <strong>cookie</strong> sits right next to
+   the <strong>fries</strong> — pairs that don't go together.`
+);
 
-      <div style="position:relative; width:80vw; max-width:1000px;">
-        <img src="stimuli/examples/wrong_example.png"
-             style="
-               width:100%;
-               max-height:65vh;
-               object-fit:contain;
-               border:8px solid #d32f2f;
-             ">
-        <div style="
-          position:absolute;
-          top:-30px;
-          right:-30px;
-          font-size:90px;
-          color:#d32f2f;
-          font-weight:bold;
-        ">✗</div>
-      </div>
+const wrong_step_2 = makeWrongExampleStep(
+  `However, the <strong>sandwich</strong> and <strong>fries</strong> are far apart from each other, even though they go together.`,
+  "Next"
+);
 
-      <button id="wrong-start-btn" style="
-        margin-top:40px;
-        font-size:24px;
-        padding:14px 40px;
-        border-radius:16px;
-        background:#4CAF50;
-        color:white;
-        border:none;
-        cursor:pointer;
-      ">
-        Next
-      </button>
-
-    </div>
-  `,
-  choices: [],
-  on_load: function() {
-    document.getElementById("wrong-start-btn")
-      .addEventListener("click", function() {
-        jsPsychInstance.finishTrial();
-      });
-  }
-};
 
 /* ---------- category structure ---------- */
 
@@ -423,7 +419,9 @@ function makePreviewPage(images) {
         flex-direction:column;
         align-items:center;
         justify-content:center;
-        height:85vh;
+        min-height:85vh;
+        padding:30px 20px;
+        box-sizing:border-box;
       ">
         <div style="
           display:grid;
@@ -659,15 +657,17 @@ class EmotionGridPlugin {
         line-height:1.5;
         color:#5a4300;
       ">
-        <strong>Reminder:</strong> Place pictures that
-        <strong style="color:#333;">go together</strong> close to each other,
-        and pictures that
-        <strong style="color:#333;">are different</strong> far apart.
-        <br>
-        <span style="font-size:20px;">
-          When you're satisfied with your arrangement, click
-          <strong style="color:#333;">Continue</strong>.
-        </span>
+        ${trial.guidance_text || `
+          <strong>Reminder:</strong> Place pictures that
+          <strong style="color:#333;">go together</strong> close to each other,
+          and pictures that
+          <strong style="color:#333;">are different</strong> far apart.
+          <br>
+          <span style="font-size:20px;">
+            When you're satisfied with your arrangement, click
+            <strong style="color:#333;">Continue</strong>.
+          </span>
+        `}
       </div>
     `;
 
@@ -763,6 +763,33 @@ class EmotionGridPlugin {
       });
 
       warningEl.textContent = warningMessage;
+      updateGuidance();
+    }
+
+    /* Advance the guidance text as each picture is introduced.
+       trial.guidance_steps maps an image filename → the message shown while
+       that picture is the one being placed. trial.guidance_final is shown
+       once every picture has been placed. Trials without guidance_steps
+       keep whatever static content the reminder box was built with. */
+    function updateGuidance() {
+      if (!trial.guidance_steps) return;
+
+      const box = display_element.querySelector("#grid-reminder");
+      if (!box) return;
+
+      if (allImagesShown) {
+        box.innerHTML = trial.guidance_final ||
+          `<span style="font-size:20px;">When you're satisfied with your arrangement,
+           click <strong style="color:#333;">Continue</strong>.</span>`;
+        return;
+      }
+
+      const current = imageState[currentFocusIdx];
+      if (!current) return;
+
+      const fileName = current.path.split("/").pop();
+      const msg = trial.guidance_steps[fileName];
+      if (msg) box.innerHTML = msg;
     }
 
     /* ---------- Dragging ---------- */
@@ -1026,8 +1053,8 @@ const participant_info_trial = {
               Block ${b + 1} of ${NUM_BLOCKS}
             </div>
             <div style="font-size:22px;line-height:1.6;color:#333;">
-              <p> You'll complete ${TRIALS_PER_BLOCK} arrangements in this block. </p>
-              <p> Please treat each arrangement independently. </p>
+              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block.
+              Please treat each arrangement independently.
             </div>
             ${categoryHint}
           </div>
@@ -1090,7 +1117,9 @@ const participant_info_trial = {
       study_version:     "adult_v1"
     });
 
+    timeline.push(demographics_page);   // collected before saving
     timeline.push(save_data);
+    timeline.push(debrief_page);        // shown after data is safely saved
     timeline.push(finish_page);
 
     // Show the reminder banner from here on
@@ -1186,6 +1215,91 @@ const main_intro = {
   choices: ["Start Main Task"]
 };
 
+/* ─────────────────────────────────────────────────────────────────────────
+   CONSENT
+   The IRB-approved consent PDF is embedded inline. A download/open link is
+   provided as a fallback, since some mobile browsers will not render a PDF
+   inside an iframe. Continue stays disabled until the box is checked.
+   ───────────────────────────────────────────────────────────────────────── */
+
+const CONSENT_PDF_PATH = "stimuli/Adult_Crowdsource_Consent_Form.pdf";
+
+const consent_page = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div style="max-width:960px;margin:auto;padding:30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:8px;">Consent to Participate in Research</h1>
+      <p style="text-align:center;font-size:19px;margin-top:0;">
+        Please read the consent form below.
+        <a href="${CONSENT_PDF_PATH}" target="_blank" rel="noopener">
+          Open it in a new tab
+        </a> if it does not display or is hard to read.
+      </p>
+
+      <iframe src="${CONSENT_PDF_PATH}"
+              style="width:100%;height:52vh;border:2px solid #ccc;border-radius:8px;
+                     background:#fff;margin:18px 0;">
+        <p style="font-size:20px;padding:20px;">
+          Your browser cannot display the consent form here.
+          <a href="${CONSENT_PDF_PATH}" target="_blank" rel="noopener">
+            Click here to open the consent form.
+          </a>
+        </p>
+      </iframe>
+
+      <label style="display:flex;align-items:flex-start;gap:14px;font-size:21px;
+                    background:#f0f7ff;border-left:5px solid #4CAF50;border-radius:6px;
+                    padding:18px 22px;cursor:pointer;">
+        <input type="checkbox" id="consent-checkbox"
+               style="width:26px;height:26px;flex-shrink:0;margin-top:2px;cursor:pointer;">
+        <span>I hereby give my consent to participate in this research study. I understand and agree to the terms as mentioned in the consent form..</span>
+      </label>
+
+      <div style="text-align:center;margin-top:26px;">
+        <button id="consent-continue-btn" disabled style="
+          font-size:24px;
+          padding:14px 42px;
+          border-radius:14px;
+          background:#4CAF50;
+          color:white;
+          border:none;
+          opacity:0.4;
+          cursor:not-allowed;
+        ">
+          Continue
+        </button>
+        <p id="consent-hint" style="font-size:17px;color:#888;margin-top:12px;">
+          Please check the box above to continue.
+        </p>
+      </div>
+
+      <p style="font-size:17px;color:#777;margin-top:22px;text-align:center;">
+        If you do not wish to participate, please close this window and return your
+        submission on Prolific.
+      </p>
+    </div>
+  `,
+  choices: [],   // no plugin-rendered button; we use our own above
+  on_load: function() {
+    const box  = document.getElementById("consent-checkbox");
+    const btn  = document.getElementById("consent-continue-btn");
+    const hint = document.getElementById("consent-hint");
+
+    box.addEventListener("change", function() {
+      const ok = box.checked;
+      btn.disabled      = !ok;
+      btn.style.opacity = ok ? "1" : "0.4";
+      btn.style.cursor  = ok ? "pointer" : "not-allowed";
+      hint.style.visibility = ok ? "hidden" : "visible";
+    });
+
+    btn.addEventListener("click", function() {
+      if (!box.checked) return;
+      jsPsychInstance.finishTrial({ consent_given: true });
+    });
+  }
+};
+
 const welcome_page = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
@@ -1204,9 +1318,10 @@ const instructions_page_1 = {
   stimulus: `
     <div style="max-width:1100px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Instructions</h1>
-      <p style="font-size:22px;">On each round, you will first see a set of pictures. After pressing Start, you can begin arranging the pictures. </p>
+      <p style="font-size:22px;">On each round, you will first see a set of pictures. After pressing <strong>Start</strong>, you can begin arranging the pictures. </p>
       <p style="font-size:22px;">Your task is to <strong>drag each picture onto the grid</strong>.</p>
       <p style="font-size:22px;">You will do this by pressing and holding on a picture, moving it to where you want, and releasing.</p>
+      <p style="font-size:22px;">You can move pictures around the grid as much as you like before submitting your arrangement.</p>
     </div>
   `,
   choices: ["Continue"]
@@ -1222,10 +1337,95 @@ const instructions_page_2 = {
         <li style="margin-bottom:14px;">Pictures that <strong>go together</strong> should be placed <strong>close to each other</strong>.</li>
         <li>Pictures that <strong>are different</strong> should be placed <strong>far apart</strong>.</li>
       </ul>
-      <p style="font-size:22px;">We'll show you an example of what to do and what not to do on the next two pages.</p>
+      <p style="font-size:22px;">Let's walk through one together, and then you'll try it yourself.</p>
     </div>
   `,
   choices: ["Continue"]
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GUIDED PRACTICE
+   Two short text pages set up the reasoning, then the participant completes
+   the first practice trial themselves with guidance shown under the grid.
+   ───────────────────────────────────────────────────────────────────────── */
+
+const guided_intro_1 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div style="max-width:1080px;margin:auto;padding:50px 30px;text-align:left;line-height:1.75;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:30px;">Let's try one together</h1>
+      <p style="font-size:23px;">You'll see five pictures of food, one at a time.
+      Drag each one onto the grid as it appears.</p>
+      <p style="font-size:23px;">Think about it like this: a <strong>hamburger</strong> goes with a
+      <strong>sandwich</strong>, so you'd place those two <strong>close together</strong>.
+      <strong>French fries</strong> go with them too.</p>
+    </div>
+  `,
+  choices: ["Next"]
+};
+
+const guided_intro_2 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div style="max-width:900px;margin:auto;padding:50px 30px;text-align:left;line-height:1.75;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:30px;">And the other two</h1>
+      <p style="font-size:23px;"><strong>Ice cream</strong> is quite different from those three,
+      so it belongs <strong>far away</strong> from them.</p>
+      <p style="font-size:23px;">But a <strong>cookie</strong> goes with ice cream — so those two
+      belong <strong>close to each other</strong>, and far from the first group.</p>
+      <p style="font-size:23px;color:#555;">Go ahead and arrange them yourself on the next screen.</p>
+    </div>
+  `,
+  choices: ["Start"]
+};
+
+/* Guidance shown under the grid during the first practice trial only */
+/* Guidance shown under the grid during the first practice trial, keyed by
+   image filename so the message advances as each picture is introduced.
+   NOTE: practice images are passed unshuffled, so they appear in the order
+   listed in MINI_PRACTICE_IMAGES. */
+const GUIDED_PRACTICE_STEPS = {
+  "sandwich.jpg": `
+    <p style="margin:0;"><strong>Let's try one together.</strong>
+    Drag each picture onto the grid as it appears.</p>
+    <p style="margin:10px 0 0 0;">Here's a <strong>sandwich</strong>. It's the first picture,
+    so you can place it anywhere.</p>`,
+
+  "hamburger.jpg": `
+    <p style="margin:0;">A <strong>hamburger</strong> goes with a sandwich —
+    place it <strong style="color:#333;">close to the sandwich</strong>.</p>`,
+
+  "french_fries_1.jpg": `
+    <p style="margin:0;"><strong>French fries</strong> go with those two as well —
+    place them <strong style="color:#333;">close to that group</strong>.</p>`,
+
+  "ice_cream_1.jpg": `
+    <p style="margin:0;"><strong>Ice cream</strong> is different from the first three —
+    place it <strong style="color:#333;">far away</strong> from them.</p>`,
+
+  "cookie.jpg": `
+    <p style="margin:0;">A <strong>cookie</strong> goes with ice cream —
+    place it <strong style="color:#333;">close to the ice cream</strong>,
+    and far from the first group.</p>`
+};
+
+const GUIDED_PRACTICE_FINAL = `
+  <p style="margin:0;">Nicely done!</p>
+  <span style="font-size:20px;">
+    When you're satisfied with your arrangement, click
+    <strong style="color:#333;">Continue</strong>.
+  </span>
+`;
+
+const guided_practice_trial = {
+  type: EmotionGridPlugin,
+  participant: DEMO_PARTICIPANT,
+  phase: "practice",
+  trial_number: -1,
+  total_trials: 1,
+  images: MINI_PRACTICE_IMAGES,
+  guidance_steps: GUIDED_PRACTICE_STEPS,
+  guidance_final: GUIDED_PRACTICE_FINAL
 };
 
 const instructions_page_3 = {
@@ -1436,16 +1636,145 @@ function balloonMiniGame(totalBalloons = 10) {
 const timeline = [
   participant_info_trial,     // silent auto-assign from URL params
   preload_trial,
+
+  consent_page,               // required checkbox before anything else
   welcome_page,
-  instructions_page_1,
-  instructions_page_2,
-  sorting_wrong_page,
-  sorting_correct_page,
-  instructions_page_3,
+
+  instructions_page_1,        // what you'll do (dragging)
+  instructions_page_2,        // the principle (close = related)
+
+  // Practice 1 — guidance shown on the trial itself
   makePreviewPage(MINI_PRACTICE_IMAGES),
-  mini_practice_trial,
+  guided_practice_trial,
+
+  // Worked examples — wrong split across three light pages
+  wrong_step_1,
+  wrong_step_2,
+  sorting_correct_page,
+
+  instructions_page_3,        // practical details
+
+  // Practice 2 — no guidance, different image set
+  makePreviewPage(MINI_PRACTICE_IMAGES_2),
+  mini_practice_trial_2,
+
   main_intro
 ];
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DEMOGRAPHICS + DATA-QUALITY QUESTIONS
+   Runs after the main task, before save_data, so responses are included
+   in the saved CSV.
+   ───────────────────────────────────────────────────────────────────────── */
+
+const demographics_page = {
+  type: jsPsychSurveyHtmlForm,
+  preamble: `
+    <div style="max-width:820px;margin:auto;padding:20px 0 0 0;text-align:left;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:16px;">A Few Final Questions</h1>
+      <p style="font-size:20px;line-height:1.6;">
+        These take about a minute. All questions are optional except where noted.
+      </p>
+    </div>
+  `,
+  html: `
+    <div style="max-width:820px;margin:auto;text-align:left;font-size:20px;line-height:1.9;">
+
+      <p><label>Age:<br>
+        <input name="age" type="number" min="18" max="120"
+               style="font-size:19px;padding:7px;width:120px;"></label></p>
+
+      <p><label>Gender:<br>
+        <select name="gender" style="font-size:19px;padding:7px;">
+          <option value="">— select —</option>
+          <option value="woman">Woman</option>
+          <option value="man">Man</option>
+          <option value="non-binary">Non-binary</option>
+          <option value="other">Other / prefer to self-describe</option>
+          <option value="no_answer">Prefer not to say</option>
+        </select></label></p>
+
+      <p><label>What is your native language? (If more than one, list all.)<br>
+        <input name="native_language" type="text"
+               style="font-size:19px;padding:7px;width:340px;"></label></p>
+
+      <p><label>Highest level of education completed:<br>
+        <select name="education" style="font-size:19px;padding:7px;">
+          <option value="">— select —</option>
+          <option value="hs">High school or equivalent</option>
+          <option value="some_college">Some college</option>
+          <option value="bachelors">Bachelor's degree</option>
+          <option value="masters">Master's degree</option>
+          <option value="doctorate">Doctorate or professional degree</option>
+          <option value="no_answer">Prefer not to say</option>
+        </select></label></p>
+
+      <p><label>What is your current country of residence? <br>
+        <input name="country_of_residence" type="text"
+               style="font-size:19px;padding:7px;width:340px;"></label></p>
+
+      <hr style="margin:28px 0;border:none;border-top:1px solid #ddd;">
+
+      <p><strong>How attentive were you while completing the arrangement task?</strong><br>
+        <label><input type="radio" name="attentiveness" value="fully" required> Fully attentive</label><br>
+        <label><input type="radio" name="attentiveness" value="somewhat"> Somewhat distracted</label><br>
+        <label><input type="radio" name="attentiveness" value="very"> Very distracted</label>
+      </p>
+
+      <p><strong>Did you experience any technical problems (pictures not loading,
+         difficulty dragging, etc.)?</strong><br>
+        <label><input type="radio" name="tech_issues" value="no" required> No</label><br>
+        <label><input type="radio" name="tech_issues" value="yes"> Yes</label><br>
+        <input name="tech_issues_detail" type="text" placeholder="If yes, please describe"
+               style="font-size:18px;padding:7px;width:100%;max-width:600px;margin-top:8px;">
+      </p>
+
+      <p><label>Did you use any particular strategy when arranging the pictures? (optional)<br>
+        <textarea name="strategy" rows="3"
+                  style="font-size:18px;padding:8px;width:100%;max-width:600px;"></textarea></label></p>
+
+      <p><label>Any comments or feedback about this study? (optional)<br>
+        <textarea name="feedback" rows="3"
+                  style="font-size:18px;padding:8px;width:100%;max-width:600px;"></textarea></label></p>
+
+    </div>
+  `,
+  button_label: "Submit"
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DEBRIEF — shown after data has been saved
+   ───────────────────────────────────────────────────────────────────────── */
+
+const debrief_page = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
+      <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Debriefing</h1>
+
+      <p style="font-size:22px;">Thank you for participating!</p>
+
+      <p style="font-size:22px;">The purpose of this study was to understand how adults
+      mentally organize everyday concepts — such as animals, plants, emotions, vehicles,
+      clothing, and household objects — and whether the way people group related items
+      reveals consistent underlying structure.</p>
+
+      <p style="font-size:22px;">We asked you to arrange pictures by distance because
+      the space between items gives us a continuous measure of how closely related you
+      consider them to be. We deliberately did not tell you the specific research
+      question beforehand, since knowing it in advance could have changed how you
+      approached the task. As we said at the start, there were genuinely
+      <strong>no correct arrangements</strong> — we were interested in your own intuitions.</p>
+
+      <p style="font-size:22px;">Your responses are identified only by your Prolific ID
+      and will be reported in aggregate. If you would like your data withdrawn, or if you
+      have questions about this research, please contact us at lillab@ucsd.edu.</p>
+
+      <p style="font-size:22px;">Thank you again for your time and contribution.</p>
+    </div>
+  `,
+  choices: ["Finish"]
+};
 
 const save_data = {
   type: jsPsychPipe,
@@ -1455,39 +1784,25 @@ const save_data = {
   data_string: () => jsPsychInstance.data.get().csv()
 };
 
-/* Qualtrics survey #2 — demographics + debrief.
-   This survey is responsible for the FINAL redirect back to Prolific
-   (End of Survey → Redirect to URL → https://app.prolific.com/submissions/complete?cc=C15NSPWS) */
-const QUALTRICS_DEBRIEF_URL = "https://ucsd.co1.qualtrics.com/jfe/form/SV_79FZbmrraQ6f5Sm";
-
 const finish_page = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div style="max-width:960px;margin:auto;padding:60px 30px;text-align:center;line-height:1.7;">
       <h1 style="font-size:30px;margin-bottom:28px;">Thank you!</h1>
       <p style="font-size:22px;">
-        You have completed the main task. Your responses have been saved.
+        You have completed the study. Your responses have been saved.
       </p>
       <p style="font-size:22px;">
-        Please click the button below to answer a few final questions
-        before returning to Prolific.
+        Please click the button below to return to Prolific and confirm your
+        submission.
       </p>
     </div>
   `,
-  choices: ["Continue"],
+  choices: ["Return to Prolific"],
   on_start: function() { setReminderVisible(false); },
   on_finish: function() {
-    // Pass the Prolific identifiers along so the Qualtrics survey can
-    // record them and redirect back to Prolific at the very end.
-    const params    = new URLSearchParams(window.location.search);
-    const pid       = params.get("PROLIFIC_PID") || window.PARTICIPANT_ID || "";
-    const studyId   = params.get("STUDY_ID")     || "";
-    const sessionId = params.get("SESSION_ID")   || "";
-
-    window.location.href = QUALTRICS_DEBRIEF_URL +
-      `?PROLIFIC_PID=${encodeURIComponent(pid)}` +
-      `&STUDY_ID=${encodeURIComponent(studyId)}` +
-      `&SESSION_ID=${encodeURIComponent(sessionId)}`;
+    // Replace with your actual Prolific completion URL:
+    window.location.href = "https://app.prolific.com/submissions/complete?cc=C15NSPWS";
   }
 };
 
