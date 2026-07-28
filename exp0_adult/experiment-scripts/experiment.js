@@ -1455,25 +1455,39 @@ const save_data = {
   data_string: () => jsPsychInstance.data.get().csv()
 };
 
+/* Qualtrics survey #2 — demographics + debrief.
+   This survey is responsible for the FINAL redirect back to Prolific
+   (End of Survey → Redirect to URL → https://app.prolific.com/submissions/complete?cc=C15NSPWS) */
+const QUALTRICS_DEBRIEF_URL = "https://ucsd.co1.qualtrics.com/jfe/form/SV_79FZbmrraQ6f5Sm";
+
 const finish_page = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div style="max-width:960px;margin:auto;padding:60px 30px;text-align:center;line-height:1.7;">
       <h1 style="font-size:30px;margin-bottom:28px;">Thank you!</h1>
       <p style="font-size:22px;">
-        You have completed the study. Your responses have been saved.
+        You have completed the main task. Your responses have been saved.
       </p>
       <p style="font-size:22px;">
-        Please click the button below to return to Prolific and confirm your
-        submission.
+        Please click the button below to answer a few final questions
+        before returning to Prolific.
       </p>
     </div>
   `,
-  choices: ["Return to Prolific"],
+  choices: ["Continue"],
   on_start: function() { setReminderVisible(false); },
   on_finish: function() {
-    // Replace with your actual Prolific completion URL:
-    window.location.href = "https://app.prolific.com/submissions/complete?cc=C15NSPWS";
+    // Pass the Prolific identifiers along so the Qualtrics survey can
+    // record them and redirect back to Prolific at the very end.
+    const params    = new URLSearchParams(window.location.search);
+    const pid       = params.get("PROLIFIC_PID") || window.PARTICIPANT_ID || "";
+    const studyId   = params.get("STUDY_ID")     || "";
+    const sessionId = params.get("SESSION_ID")   || "";
+
+    window.location.href = QUALTRICS_DEBRIEF_URL +
+      `?PROLIFIC_PID=${encodeURIComponent(pid)}` +
+      `&STUDY_ID=${encodeURIComponent(studyId)}` +
+      `&SESSION_ID=${encodeURIComponent(sessionId)}`;
   }
 };
 
