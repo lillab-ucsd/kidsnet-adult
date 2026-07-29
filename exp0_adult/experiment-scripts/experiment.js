@@ -54,7 +54,7 @@ const sorting_correct_page = {
         color:#333;
       ">
         Instead, group pictures so that <strong>pictures that go together are close
-        together</strong> and <strong>pictures that are different are far apart</strong>.
+        together</strong> and <strong>pictures that are different are further apart</strong>.
       </div>
 
       <div style="position:relative; width:80vw; max-width:1000px;">
@@ -661,7 +661,7 @@ class EmotionGridPlugin {
           <strong>Reminder:</strong> Place pictures that
           <strong style="color:#333;">go together</strong> close to each other,
           and pictures that
-          <strong style="color:#333;">are different</strong> far apart.
+          <strong style="color:#333;">are different</strong> further apart.
           <br>
           <span style="font-size:20px;">
             When you're satisfied with your arrangement, click
@@ -1205,7 +1205,7 @@ const main_intro = {
     <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Practice Complete</h1>
       <p style="font-size:22px;">You're ready to begin the main task. There will be <strong>${NUM_BLOCKS} blocks</strong>, each with <strong>${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category.</p>
-      <p style="font-size:22px;">Remember: place pictures that <strong>go together close</strong>, and pictures that <strong>are different far apart</strong>. Please treat each arrangement independently.</p>
+      <p style="font-size:22px;">Remember: place pictures that <strong>go together close</strong>, and pictures that <strong>are different further apart</strong>. Please treat each arrangement independently.</p>
       <p style="font-size:22px;">
         When you are <strong>satisfied with your arrangement</strong>, click
         <strong>Continue</strong> to move to the next round.
@@ -1335,7 +1335,7 @@ const instructions_page_2 = {
       <p style="font-size:22px;">As you place each picture, think about how it relates to the others already on the grid:</p>
       <ul style="font-size:22px;">
         <li style="margin-bottom:14px;">Pictures that <strong>go together</strong> should be placed <strong>close to each other</strong>.</li>
-        <li>Pictures that <strong>are different</strong> should be placed <strong>far apart</strong>.</li>
+        <li>Pictures that <strong>are different</strong> should be placed <strong>further apart</strong>.</li>
       </ul>
       <p style="font-size:22px;">Let's walk through one together, and then you'll try it yourself.</p>
     </div>
@@ -1671,9 +1671,9 @@ const demographics_page = {
   type: jsPsychSurveyHtmlForm,
   preamble: `
     <div style="max-width:820px;margin:auto;padding:20px 0 0 0;text-align:left;">
-      <h1 style="text-align:center;font-size:30px;margin-bottom:16px;">A Few Final Questions</h1>
+      <h1 style="text-align:center;font-size:30px;margin-bottom:16px;">Survey Questions</h1>
       <p style="font-size:20px;line-height:1.6;">
-        These take about a minute. All questions are optional except where noted.
+        These take about a minute. All questions are optional.
       </p>
     </div>
   `,
@@ -1716,24 +1716,28 @@ const demographics_page = {
       <hr style="margin:28px 0;border:none;border-top:1px solid #ddd;">
 
       <p><strong>How attentive were you while completing the arrangement task?</strong><br>
-        <label><input type="radio" name="attentiveness" value="fully" required> Fully attentive</label><br>
+        <label><input type="radio" name="attentiveness" value="fully"> Fully attentive</label><br>
         <label><input type="radio" name="attentiveness" value="somewhat"> Somewhat distracted</label><br>
         <label><input type="radio" name="attentiveness" value="very"> Very distracted</label>
       </p>
 
+      <p><label>What do you think the study was about?<br>
+        <textarea name="study_purpose" rows="3"
+                  style="font-size:18px;padding:8px;width:100%;max-width:600px;"></textarea></label></p>
+
       <p><strong>Did you experience any technical problems (pictures not loading,
          difficulty dragging, etc.)?</strong><br>
-        <label><input type="radio" name="tech_issues" value="no" required> No</label><br>
+        <label><input type="radio" name="tech_issues" value="no"> No</label><br>
         <label><input type="radio" name="tech_issues" value="yes"> Yes</label><br>
         <input name="tech_issues_detail" type="text" placeholder="If yes, please describe"
                style="font-size:18px;padding:7px;width:100%;max-width:600px;margin-top:8px;">
       </p>
 
-      <p><label>Did you use any particular strategy when arranging the pictures? (optional)<br>
+      <p><label>Did you use any particular strategy when arranging the pictures?<br>
         <textarea name="strategy" rows="3"
                   style="font-size:18px;padding:8px;width:100%;max-width:600px;"></textarea></label></p>
 
-      <p><label>Any comments or feedback about this study? (optional)<br>
+      <p><label>Any comments or feedback about this study?<br>
         <textarea name="feedback" rows="3"
                   style="font-size:18px;padding:8px;width:100%;max-width:600px;"></textarea></label></p>
 
