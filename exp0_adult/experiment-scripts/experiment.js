@@ -91,8 +91,7 @@ const sorting_correct_page = {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
-   WRONG EXAMPLE — split across three pages so no single screen is dense.
-   Same image each time; only the explanation changes.
+   WRONG EXAMPLE
    ───────────────────────────────────────────────────────────────────────── */
 
 function makeWrongExampleStep(bodyHTML, buttonLabel = "Next") {
@@ -347,8 +346,6 @@ const TOPBAR_Y = 10;
   document.head.appendChild(style);
 })();
 
-/* setReminderVisible retained as a no-op so existing calls in the code
-   don't error. The reminder is now baked into the grid trial itself. */
 function setReminderVisible(_visible) { /* no-op */ }
 
 function getTaskScale() {
@@ -405,7 +402,7 @@ function makePreviewPage(images) {
       </button>
       </div>
     `,
-    choices: [],  // disable default jsPsych button
+    choices: [],  
     on_load: function() {
       document.getElementById("preview-start-btn")
         .addEventListener("click", function() {
@@ -796,7 +793,7 @@ class EmotionGridPlugin {
         timestamp: performance.now()
       });
 
-// --- ADDED LOGIC: Spawn the next image in the sequence ---
+// --- Spawn the next image in the sequence ---
       if (!allImagesShown && index === currentFocusIdx && item.hasBeenMoved) {
         if (currentFocusIdx < imageState.length - 1) {
           // Bring in the next image
@@ -820,7 +817,7 @@ class EmotionGridPlugin {
       render();
     });
 
-    // --- ADDED LOGIC: Make the Continue button actually finish the trial ---
+    // Make the Continue button actually finish the trial ---
     continueBtn.addEventListener("click", () => {
 
       const placements = imageState.map(item => ({
@@ -916,7 +913,7 @@ const participant_info_trial = {
                Setting up your study…
              </div>`,
   choices: [],
-  // No trial_duration — we call finishTrial manually after DataPipe fetch
+
   on_load: async function() {
 
     // Hide the banner during this setup step
@@ -947,7 +944,7 @@ const participant_info_trial = {
       }
     }
 
-    const setCondition = condition + 1;   // 1-indexed for readability
+    const setCondition = condition + 1; 
     window.SET_CONDITION = setCondition;
 
     /* ---------- CATEGORY ORDER: fully random per participant ---------- */
@@ -1029,7 +1026,6 @@ const participant_info_trial = {
         globalTrialNumber++;
       }
 
-      // Simple continue between blocks
       if (b < NUM_BLOCKS - 1) {
         timeline.push({
           type: jsPsychHtmlButtonResponse,
@@ -1086,16 +1082,16 @@ const preload_trial = {
     ...MINI_PRACTICE_IMAGES_2,
     ...STATIC_IMAGES
   ],
-  show_detailed_errors: true,   // surface any load failures
-  continue_after_error: false,  // halt so you can see what failed
-  max_load_time: 60000          // 60s budget (default is unlimited)
+  show_detailed_errors: true,
+  continue_after_error: false,
+  max_load_time: 60000
 };
 
 const mini_practice_trial_2 = {
   type: EmotionGridPlugin,
   participant: DEMO_PARTICIPANT,
   phase: "practice",
-  trial_number: -2,  // just to distinguish it
+  trial_number: -2,
   total_trials: 1,
   images: MINI_PRACTICE_IMAGES_2
 };
@@ -1172,7 +1168,7 @@ const consent_page = {
       </p>
     </div>
   `,
-  choices: [],   // no plugin-rendered button; we use our own above
+  choices: [],
   on_load: function() {
     const box  = document.getElementById("consent-checkbox");
     const btn  = document.getElementById("consent-continue-btn");
@@ -1270,7 +1266,6 @@ const guided_intro_2 = {
   choices: ["Start"]
 };
 
-/* Guidance shown under the grid during the first practice trial only */
 /* Guidance shown under the grid during the first practice trial, keyed by
    image filename so the message advances as each picture is introduced.
    NOTE: practice images are passed unshuffled, so they appear in the order
@@ -1348,27 +1343,24 @@ function getLeftStartPosition() {
 
 
 const timeline = [
-  participant_info_trial,     // silent auto-assign from URL params
+  participant_info_trial,
   preload_trial,
 
-  consent_page,               // required checkbox before anything else
+  consent_page,
   welcome_page,
 
-  instructions_page_1,        // what you'll do (dragging)
-  instructions_page_2,        // the principle (close = related)
+  instructions_page_1,
+  instructions_page_2,
 
-  // Practice 1 — guidance shown on the trial itself
   makePreviewPage(MINI_PRACTICE_IMAGES),
   guided_practice_trial,
 
-  // Worked examples — wrong split across three light pages
   wrong_step_1,
   wrong_step_2,
   sorting_correct_page,
 
-  instructions_page_3,        // practical details
+  instructions_page_3,
 
-  // Practice 2 — no guidance, different image set
   makePreviewPage(MINI_PRACTICE_IMAGES_2),
   mini_practice_trial_2,
 
@@ -1519,7 +1511,6 @@ const finish_page = {
   choices: ["Return to Prolific"],
   on_start: function() { setReminderVisible(false); },
   on_finish: function() {
-    // Replace with your actual Prolific completion URL:
     window.location.href = "https://app.prolific.com/submissions/complete?cc=C15NSPWS";
   }
 };
