@@ -125,9 +125,9 @@ function makeWrongExampleStep(bodyHTML, buttonLabel = "Next") {
           ${bodyHTML}
         </div>
 
-        <div style="position:relative;width:80vw;max-width:900px;">
+        <div style="position:relative;width:80vw;max-width:1000px;">
           <img src="stimuli/examples/wrong_example.png"
-               style="width:100%;max-height:52vh;object-fit:contain;
+               style="width:100%;max-height:65vh;object-fit:contain;
                       border:8px solid #d32f2f;">
           <div style="position:absolute;top:-30px;right:-30px;font-size:90px;
                       color:#d32f2f;font-weight:bold;">✗</div>
@@ -645,6 +645,12 @@ class EmotionGridPlugin {
       </div>
 
       <div id="grid-reminder" style="
+        min-height:120px;
+        box-sizing:border-box;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
         max-width:1200px;
         margin:20px auto 30px auto;
         padding:20px 30px;
