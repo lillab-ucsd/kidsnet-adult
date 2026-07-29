@@ -75,16 +75,7 @@ const sorting_correct_page = {
         ">✓</div>
       </div>
 
-      <button id="correct-next-btn" style="
-        margin-top:40px;
-        font-size:24px;
-        padding:14px 40px;
-        border-radius:16px;
-        background:#4CAF50;
-        color:white;
-        border:none;
-        cursor:pointer;
-      ">
+      <button id="correct-next-btn" class="study-btn" style="margin-top:40px;">
         Next
       </button>
 
@@ -133,16 +124,7 @@ function makeWrongExampleStep(bodyHTML, buttonLabel = "Next") {
                       color:#d32f2f;font-weight:bold;">✗</div>
         </div>
 
-        <button class="wrong-step-btn" style="
-          margin-top:32px;
-          font-size:24px;
-          padding:14px 40px;
-          border-radius:16px;
-          background:#4CAF50;
-          color:white;
-          border:none;
-          cursor:pointer;
-        ">${buttonLabel}</button>
+        <button class="wrong-step-btn study-btn">${buttonLabel}</button>
       </div>
     `,
     choices: [],
@@ -293,17 +275,6 @@ const CATEGORIES = {
   ]
 };
 
-const SET_CONDITIONS = [
-  { animal: 0, plant: 0, artifact: 0 },
-  { animal: 0, plant: 0, artifact: 1 },
-  { animal: 0, plant: 1, artifact: 0 },
-  { animal: 0, plant: 1, artifact: 1 },
-  { animal: 1, plant: 0, artifact: 0 },
-  { animal: 1, plant: 0, artifact: 1 },
-  { animal: 1, plant: 1, artifact: 0 },
-  { animal: 1, plant: 1, artifact: 1 }
-];
-
 /* ---------- fixed stage ---------- */
 
 const BASE_TASK_WIDTH = 1160;
@@ -386,17 +357,6 @@ function getTaskScale() {
   return Math.min(vw / BASE_TASK_WIDTH, vh / BASE_TASK_HEIGHT, 1);
 }
 
-function getSingleStartPosition() {
-  return {
-    x: GRID_X + GRID_WIDTH / 2,
-    y: GRID_Y + GRID_HEIGHT / 2
-  };
-}
-
-function getFileName(path) {
-  return path.split("/").pop();
-}
-
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));
 }
@@ -440,17 +400,9 @@ function makePreviewPage(images) {
           `).join("")}
         </div>
 
-        <button id="preview-start-btn" style="
-          font-size:26px;
-          padding:18px 50px;
-          border-radius:16px;
-          background:#4CAF50;
-          color:white;
-          border:none;
-          cursor:pointer;
-        ">
-          Start
-        </button>
+      <button id="preview-start-btn" class="study-btn">
+        Start
+      </button>
       </div>
     `,
     choices: [],  // disable default jsPsych button
@@ -461,24 +413,6 @@ function makePreviewPage(images) {
         });
     }
   };
-}
-
-function nearestCellFromStagePoint(x, y) {
-  const localX = x - GRID_X;
-  const localY = y - GRID_Y;
-
-  if (localX < 0 || localX > GRID_WIDTH || localY < 0 || localY > GRID_HEIGHT) {
-    return null;
-  }
-
-  const col = Math.max(0, Math.min(GRID_COLS - 1, Math.floor(localX / CELL_SIZE)));
-  const row = Math.max(0, Math.min(GRID_ROWS - 1, Math.floor(localY / CELL_SIZE)));
-
-  return getCellCenter(col, row);
-}
-
-function sameCell(a, b) {
-  return a && b && a.col === b.col && a.row === b.row;
 }
 
 function makeCSVContent(rows) {
@@ -630,13 +564,11 @@ class EmotionGridPlugin {
             font-size:20px;
           "></div>
 
-          <button id="continue-btn" style="
+          <button id="continue-btn" class="study-btn" style="
             position:absolute;
             top:${GRID_Y - 60}px;
             left:50%;
             transform:translateX(-50%);
-            padding:12px 28px;
-            font-size:18px;
             display:none;
           ">
             Continue
@@ -648,10 +580,9 @@ class EmotionGridPlugin {
         min-height:120px;
         box-sizing:border-box;
         display:flex;
-        flex-direction:column;
         align-items:center;
         justify-content:center;
-        max-width:1200px;
+        max-width:1280px;
         margin:20px auto 30px auto;
         padding:20px 30px;
         text-align:center;
@@ -663,11 +594,10 @@ class EmotionGridPlugin {
         line-height:1.5;
         color:#5a4300;
       ">
+      <div id="grid-reminder-content" style="width:100%;">
         ${trial.guidance_text || `
-          <strong>Reminder:</strong> Place pictures that
-          <strong style="color:#333;">go together</strong> close to each other,
-          and pictures that
-          <strong style="color:#333;">are different</strong> further apart.
+          <strong>Reminder:</strong> Place pictures that <strong style="color:#333;">go together</strong> close to each other,
+          and pictures that <strong style="color:#333;">are different</strong> further apart.
           <br>
           <span style="font-size:20px;">
             When you're satisfied with your arrangement, click
@@ -748,8 +678,9 @@ class EmotionGridPlugin {
           e.preventDefault();
 
           const rect = stage.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
+          const scale = rect.width / BASE_TASK_WIDTH;
+          const x = (e.clientX - rect.left) / scale;
+          const y = (e.clientY - rect.top) / scale;
 
           dragState = {
             index: index,
@@ -780,7 +711,7 @@ class EmotionGridPlugin {
     function updateGuidance() {
       if (!trial.guidance_steps) return;
 
-      const box = display_element.querySelector("#grid-reminder");
+      const box = display_element.querySelector("#grid-reminder-content");
       if (!box) return;
 
       if (allImagesShown) {
@@ -805,8 +736,9 @@ class EmotionGridPlugin {
       if (!dragState || e.pointerId !== dragState.pointerId) return;
 
       const rect = stage.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const scale = rect.width / BASE_TASK_WIDTH;
+      const x = (e.clientX - rect.left) / scale;
+      const y = (e.clientY - rect.top) / scale;
 
       const index = dragState.index;
 
@@ -926,23 +858,34 @@ EmotionGridPlugin.info = {
   parameters: {}
 };
 
+/* Scale the current trial's content down so it always fits the viewport.
+   Prevents scrolling and off-screen buttons on small screens. */
+function fitContentToViewport() {
+  const el = document.querySelector('.jspsych-content');
+  if (!el) return;
+
+  el.style.transform = 'none';
+  el.style.transformOrigin = 'center center';
+
+  const w = el.scrollWidth;
+  const h = el.scrollHeight;
+  if (!w || !h) return;
+
+  const scale = Math.min(1, (window.innerWidth - 24) / w, (window.innerHeight - 24) / h);
+  if (scale < 1) el.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener('resize', fitContentToViewport);
+
 /* ---------- jsPsych setup ---------- */
 
 const jsPsychInstance = initJsPsych({
   display_element: 'jspsych-target',
+  on_trial_load: function() {
+    requestAnimationFrame(fitContentToViewport);
+  },
   on_finish: function() {}
 });
-
-const BALLOON_IMAGES = [
-  "stimuli/balloons/balloon_red.png",
-  "stimuli/balloons/balloon_blue.png",
-  "stimuli/balloons/balloon_green.png",
-  "stimuli/balloons/balloon_yellow.png",
-  "stimuli/balloons/balloon_purple.png",
-  "stimuli/balloons/balloon_pink.png",
-  "stimuli/balloons/balloon_violet.png",
-  "stimuli/balloons/balloon_orange.png"
-];
 
 /* ── AUTO-ASSIGN FROM URL PARAMETERS (Prolific / MTurk) ─────────────────────── */
 /* Reads participant ID from URL:
@@ -963,12 +906,6 @@ function getParticipantIdFromURL() {
       || getURLParam("workerId")
       || getURLParam("pid")
       || ("test_" + Math.random().toString(36).slice(2, 10));
-}
-
-function getVersionAssignment() {
-  const urlVer = parseInt(getURLParam("version"), 10);
-  if (urlVer >= 1 && urlVer <= 12) return urlVer;
-  return Math.floor(Math.random() * 12) + 1;
 }
 
 /* This trial runs silently — participants never see or enter anything.
@@ -1092,7 +1029,7 @@ const participant_info_trial = {
         globalTrialNumber++;
       }
 
-      // Simple continue between blocks (no balloons, no celebrations)
+      // Simple continue between blocks
       if (b < NUM_BLOCKS - 1) {
         timeline.push({
           type: jsPsychHtmlButtonResponse,
@@ -1145,7 +1082,6 @@ const preload_trial = {
   type: jsPsychPreload,
   images: [
     ...Object.values(CATEGORIES).flat(2),
-    ...BALLOON_IMAGES,
     ...MINI_PRACTICE_IMAGES,
     ...MINI_PRACTICE_IMAGES_2,
     ...STATIC_IMAGES
@@ -1153,46 +1089,6 @@ const preload_trial = {
   show_detailed_errors: true,   // surface any load failures
   continue_after_error: false,  // halt so you can see what failed
   max_load_time: 60000          // 60s budget (default is unlimited)
-};
-
-const practice_intro = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <div style="
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:60vh;
-    ">
-      <button id="practice-start-btn" style="
-        font-size:28px;
-        padding:20px 50px;
-        border-radius:18px;
-        cursor:pointer;
-        background:#4CAF50;
-        color:white;
-        border:none;
-      ">
-        Start Practice
-      </button>
-    </div>
-  `,
-  choices: [],  // disable default jsPsych button
-  on_load: function() {
-    document.getElementById("practice-start-btn")
-      .addEventListener("click", function() {
-        jsPsychInstance.finishTrial();
-      });
-  }
-};
-
-const mini_practice_trial = {
-  type: EmotionGridPlugin,
-  participant: DEMO_PARTICIPANT,
-  phase: "practice",
-  trial_number: -1,  // distinguish from real practice
-  total_trials: 1,
-  images: MINI_PRACTICE_IMAGES
 };
 
 const mini_practice_trial_2 = {
@@ -1262,16 +1158,7 @@ const consent_page = {
       </label>
 
       <div style="text-align:center;margin-top:26px;">
-        <button id="consent-continue-btn" disabled style="
-          font-size:24px;
-          padding:14px 42px;
-          border-radius:14px;
-          background:#4CAF50;
-          color:white;
-          border:none;
-          opacity:0.4;
-          cursor:not-allowed;
-        ">
+        <button id="consent-continue-btn" class="study-btn" disabled>
           Continue
         </button>
         <p id="consent-hint" style="font-size:17px;color:#888;margin-top:12px;">
@@ -1293,9 +1180,7 @@ const consent_page = {
 
     box.addEventListener("change", function() {
       const ok = box.checked;
-      btn.disabled      = !ok;
-      btn.style.opacity = ok ? "1" : "0.4";
-      btn.style.cursor  = ok ? "pointer" : "not-allowed";
+      btn.disabled = !ok;
       hint.style.visibility = ok ? "hidden" : "visible";
     });
 
@@ -1450,67 +1335,6 @@ const instructions_page_3 = {
   choices: ["Start Practice"]
 };
 
-const attention_star_page = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <div style="
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      padding:80px 20px 40px 20px;
-      text-align:center;
-    ">
-      <img src="stimuli/star.png" style="
-        width:160px;
-        height:160px;
-        animation: spinScale 1.5s ease-in-out infinite;
-        margin-bottom:30px;
-      ">
-      <div style="font-size:28px; font-weight:600;">
-        Great job!
-      </div>
-    </div>
-
-    <style>
-      @keyframes spinScale {
-        0%   { transform: scale(1) rotate(0deg); }
-        50%  { transform: scale(1.4) rotate(180deg); }
-        100% { transform: scale(1) rotate(360deg); }
-      }
-    </style>
-  `,
-  choices: ["Next"]
-};
-
-function makeCelebrationPage(message = "Great job!") {
-  return {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-      <div style="
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        padding:80px 20px 40px 20px;
-        text-align:center;
-      ">
-        <img src="stimuli/fireworks.gif" style="
-          width:300px;
-          height:200px;
-          animation: spinScale 1.5s ease-in-out infinite;
-          margin-bottom:30px;
-        ">
-        <div style="font-size:28px; font-weight:600;">
-          ${message}
-        </div>
-      </div>
-
-
-    `,
-    choices: ["Next"]
-  };
-}
 
 function getLeftStartPosition() {
 
@@ -1519,122 +1343,6 @@ function getLeftStartPosition() {
   return {
     x: LEFT_EDGE + focalWidth / 2,
     y: GRID_Y + GRID_HEIGHT / 2
-  };
-}
-
-function balloonMiniGame(totalBalloons = 10) {
-  return {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-      <div id="balloon-stage" style="
-        position:relative;
-        width:100vw;
-        height:100vh;
-        overflow:hidden;
-        background: linear-gradient(#87CEEB, #E0F7FF);
-      "></div>
-
-      <style>
-        .balloon {
-          position:absolute;
-          width:150px;
-          height:150px;
-          cursor:pointer;
-          user-select:none;
-          touch-action: manipulation;
-          transition: transform 0.15s ease;
-        }
-
-        .balloon:active {
-          transform: scale(1.1);
-        }
-
-        .pop {
-          animation: popAnim 0.35s forwards;
-        }
-
-        @keyframes popAnim {
-          0%   { transform: scale(1); opacity:1; }
-          100% { transform: scale(1.8); opacity:0; }
-        }
-      </style>
-    `,
-    choices: [],
-    on_load: function() {
-
-      const stage = document.getElementById("balloon-stage");
-
-      const balloonImages = [
-        "stimuli/balloons/balloon_red.png",
-        "stimuli/balloons/balloon_blue.png",
-        "stimuli/balloons/balloon_green.png",
-        "stimuli/balloons/balloon_yellow.png",
-        "stimuli/balloons/balloon_purple.png",
-        "stimuli/balloons/balloon_pink.png",
-        "stimuli/balloons/balloon_violet.png",
-        "stimuli/balloons/balloon_orange.png"
-      ];
-
-      let poppedCount = 0;
-
-      function showBalloon() {
-
-        // END condition
-        if (poppedCount >= totalBalloons) {
-
-          const doneButton = document.createElement("button");
-          doneButton.textContent = "Continue";
-
-          doneButton.style.position = "absolute";
-          doneButton.style.left = "50%";
-          doneButton.style.top = "50%";
-          doneButton.style.transform = "translate(-50%, -50%)";
-          doneButton.style.fontSize = "28px";
-          doneButton.style.padding = "20px 50px";
-          doneButton.style.borderRadius = "16px";
-          doneButton.style.background = "#4CAF50";
-          doneButton.style.color = "white";
-          doneButton.style.border = "none";
-          doneButton.style.cursor = "pointer";
-
-          doneButton.addEventListener("click", () => {
-            jsPsychInstance.finishTrial();
-          });
-
-          stage.appendChild(doneButton);
-          return;
-        }
-
-        // CREATE BALLOON
-        const balloon = document.createElement("img");
-        balloon.className = "balloon";
-
-        balloon.src =
-          balloonImages[Math.floor(Math.random() * balloonImages.length)];
-
-        const maxX = window.innerWidth - 140;
-        const maxY = window.innerHeight - 200;
-
-        balloon.style.left = Math.random() * maxX + "px";
-        balloon.style.top = Math.random() * maxY + "px";
-
-        balloon.addEventListener("pointerdown", function() {
-
-          balloon.classList.add("pop");
-
-          setTimeout(() => {
-            balloon.remove();
-            poppedCount++;
-            showBalloon();   //call next balloon
-          }, 300);
-        });
-
-        stage.appendChild(balloon);
-      }
-
-      //start first balloon
-      showBalloon();
-    }
   };
 }
 
