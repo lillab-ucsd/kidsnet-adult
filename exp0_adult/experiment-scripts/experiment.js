@@ -577,7 +577,7 @@ class EmotionGridPlugin {
       </div>
 
       <div id="grid-reminder" style="
-        min-height:120px;
+        min-height:125px;
         box-sizing:border-box;
         display:flex;
         align-items:center;
@@ -1154,7 +1154,7 @@ const consent_page = {
                     padding:18px 22px;cursor:pointer;">
         <input type="checkbox" id="consent-checkbox"
                style="width:26px;height:26px;flex-shrink:0;margin-top:2px;cursor:pointer;">
-        <span>I hereby give my consent to participate in this research study. I understand and agree to the terms as mentioned in the consent form..</span>
+        <span>I hereby give my consent to participate in this research study. I understand and agree to the terms as mentioned in the consent form.</span>
       </label>
 
       <div style="text-align:center;margin-top:26px;">
