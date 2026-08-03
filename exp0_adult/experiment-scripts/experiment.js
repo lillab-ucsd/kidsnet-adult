@@ -1,19 +1,19 @@
 const DEMO_PARTICIPANT = "demo";
 
 const MINI_PRACTICE_IMAGES = [
-  "stimuli/food/sandwich.jpg",
-  "stimuli/food/hamburger.jpg",
-  "stimuli/food/french_fries_1.jpg",
-  "stimuli/food/ice_cream_1.jpg",
-  "stimuli/food/cookie.jpg",
+  "stimuli/scenes/beach.jpg",
+  "stimuli/scenes/island.jpg",
+  "stimuli/scenes/house.jpg",
+  "stimuli/scenes/street.jpg",
+  "stimuli/scenes/castle.jpg",
 ];
 
 const MINI_PRACTICE_IMAGES_2 = [
-  "stimuli/food/toast.jpg",
-  "stimuli/food/bread.jpg",
-  "stimuli/food/croissant.jpg",
-  "stimuli/food/chocolate_2.jpg",
-  "stimuli/food/candy.jpg"
+  "stimuli/scenes/canyon.jpg",
+  "stimuli/scenes/mountain.jpg",
+  "stimuli/scenes/stream.jpg",
+  "stimuli/scenes/waterfall.jpg",
+  "stimuli/scenes/forest.jpg"
 ];
 
 const NUM_BLOCKS = 6;
@@ -137,13 +137,20 @@ function makeWrongExampleStep(bodyHTML, buttonLabel = "Next") {
 }
 
 const wrong_step_1 = makeWrongExampleStep(
-  `Look closely at what that does. The <strong>ice cream</strong> now sits right next to
-   the <strong>hamburger</strong>, and the <strong>cookie</strong> sits right next to
-   the <strong>fries</strong> — pairs that don't go together.`
+  `Please <strong>avoid sorting the pictures into neat rows and columns</strong>,
+   like the example below.`
+);
+
+const wrong_step_1b = makeWrongExampleStep(
+  `When the pictures are lined up this way, the <strong>beach</strong> ends up right next to
+   the <strong>house</strong>, and the <strong>island</strong> ends up right next to
+   the <strong>street</strong> — pairs that don't go together.`
 );
 
 const wrong_step_2 = makeWrongExampleStep(
-  `However, the <strong>sandwich</strong> and <strong>fries</strong> are far apart from each other, even though they go together.`,
+  `At the same time, the <strong>house</strong> and <strong>castle</strong> end up far apart,
+   even though they do go together. Lining pictures up in rows and columns hides
+   which ones belong with which.`,
   "Next"
 );
 
@@ -980,7 +987,7 @@ const participant_info_trial = {
         ? `<div style="font-size:20px;line-height:1.6;color:#5a4300;
                        background:#fff8e1;border:2px solid #f9c74f;
                        border-radius:10px;padding:14px 20px;margin-top:20px;">
-             For this block, think about how these pictures go together
+             For these pictures, think about how they go together
              <strong>based on how they feel inside</strong>.
            </div>`
         : "";
@@ -990,11 +997,10 @@ const participant_info_trial = {
         stimulus: `
           <div style="max-width:900px;margin:auto;padding:40px;text-align:center;">
             <div style="font-size:30px;margin-bottom:24px;">
-              Block ${b + 1} of ${NUM_BLOCKS}
+              Next set of pictures
             </div>
             <div style="font-size:22px;line-height:1.6;color:#333;">
-              You'll complete ${TRIALS_PER_BLOCK} arrangements in this block.
-              Please treat each arrangement independently.
+              Please arrange each set independently.
             </div>
             ${categoryHint}
           </div>
@@ -1032,10 +1038,10 @@ const participant_info_trial = {
           stimulus: `
             <div style="max-width:900px;margin:auto;padding:60px 40px;text-align:center;">
               <div style="font-size:26px;margin-bottom:24px;">
-                Block ${b + 1} of ${NUM_BLOCKS} complete.
+                Nice work! Take a short break if you'd like.
               </div>
               <div style="font-size:20px;line-height:1.6;color:#555;">
-                Take a short break if you'd like, then continue when you're ready.<br>
+                Continue when you're ready.<br>
               </div>
             </div>
           `,
@@ -1082,8 +1088,17 @@ const preload_trial = {
     ...MINI_PRACTICE_IMAGES_2,
     ...STATIC_IMAGES
   ],
+  message: `
+    <div style="max-width:760px;margin:auto;text-align:center;line-height:1.6;">
+      <p style="font-size:24px;margin-bottom:10px;">Loading the study…</p>
+      <p style="font-size:20px;color:#555;">
+        This usually takes about <strong>10–15 seconds</strong>.
+        Please don't close or refresh this page.
+      </p>
+    </div>`,
+  show_progress_bar: true,
   show_detailed_errors: true,
-  continue_after_error: false,
+  continue_after_error: true,
   max_load_time: 60000
 };
 
@@ -1102,7 +1117,7 @@ const main_intro = {
   stimulus: `
     <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Practice Complete</h1>
-      <p style="font-size:22px;">You're ready to begin the main task. There will be <strong>${NUM_BLOCKS} blocks</strong>, each with <strong>${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category.</p>
+      <p style="font-size:22px;">You're ready to begin the main task. You'll arrange <strong>${TOTAL_MAIN_TRIALS} different sets of pictures</strong>, one set at a time.</p>
       <p style="font-size:22px;">Remember: place pictures that <strong>go together close</strong>, and pictures that <strong>are different further apart</strong>. Please treat each arrangement independently.</p>
       <p style="font-size:22px;">
         When you are <strong>satisfied with your arrangement</strong>, click
@@ -1125,19 +1140,32 @@ const CONSENT_PDF_PATH = "stimuli/Adult_Crowdsource_Consent_Form.pdf";
 const consent_page = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <div style="max-width:960px;margin:auto;padding:30px;text-align:left;line-height:1.7;">
-      <h1 style="text-align:center;font-size:30px;margin-bottom:8px;">Consent to Participate in Research</h1>
-      <p style="text-align:center;font-size:19px;margin-top:0;">
+    <div style="
+      display:flex;
+      flex-direction:column;
+      height:100vh;
+      max-width:960px;
+      margin:auto;
+      padding:16px 30px;
+      box-sizing:border-box;
+      text-align:left;
+      line-height:1.5;
+    ">
+      <h1 style="text-align:center;font-size:26px;margin:0 0 4px 0;flex-shrink:0;">
+        Consent to Participate in Research
+      </h1>
+      <p style="text-align:center;font-size:17px;margin:0 0 10px 0;flex-shrink:0;">
         Please read the consent form below.
-        <a href="${CONSENT_PDF_PATH}" target="_blank" rel="noopener">
-          Open it in a new tab
-        </a> if it does not display or is hard to read.
+        <a href="${CONSENT_PDF_PATH}" target="_blank" rel="noopener">Open it in a new tab</a>
+        if it does not display or is hard to read.
       </p>
 
+      <!-- flex:1 + min-height:0 lets the PDF absorb whatever space is left,
+           so the page can never overflow regardless of screen height -->
       <iframe src="${CONSENT_PDF_PATH}"
-              style="width:100%;height:52vh;border:2px solid #ccc;border-radius:8px;
-                     background:#fff;margin:18px 0;">
-        <p style="font-size:20px;padding:20px;">
+              style="flex:1 1 auto;min-height:0;width:100%;
+                     border:2px solid #ccc;border-radius:8px;background:#fff;">
+        <p style="font-size:18px;padding:20px;">
           Your browser cannot display the consent form here.
           <a href="${CONSENT_PDF_PATH}" target="_blank" rel="noopener">
             Click here to open the consent form.
@@ -1145,24 +1173,23 @@ const consent_page = {
         </p>
       </iframe>
 
-      <label style="display:flex;align-items:flex-start;gap:14px;font-size:21px;
+      <label style="display:flex;align-items:center;gap:12px;font-size:18px;
                     background:#f0f7ff;border-left:5px solid #4CAF50;border-radius:6px;
-                    padding:18px 22px;cursor:pointer;">
+                    padding:12px 18px;margin:10px 0 0 0;cursor:pointer;flex-shrink:0;">
         <input type="checkbox" id="consent-checkbox"
-               style="width:26px;height:26px;flex-shrink:0;margin-top:2px;cursor:pointer;">
-        <span>I hereby give my consent to participate in this research study. I understand and agree to the terms as mentioned in the consent form.</span>
+               style="width:24px;height:24px;flex-shrink:0;cursor:pointer;">
+        <span>I hereby give my consent to participate in this research study. I understand
+              and agree to the terms as mentioned in the consent form.</span>
       </label>
 
-      <div style="text-align:center;margin-top:26px;">
-        <button id="consent-continue-btn" class="study-btn" disabled>
-          Continue
-        </button>
-        <p id="consent-hint" style="font-size:17px;color:#888;margin-top:12px;">
+      <div style="text-align:center;margin-top:10px;flex-shrink:0;">
+        <button id="consent-continue-btn" class="study-btn" disabled>Continue</button>
+        <p id="consent-hint" style="font-size:15px;color:#888;margin:8px 0 0 0;">
           Please check the box above to continue.
         </p>
       </div>
 
-      <p style="font-size:17px;color:#777;margin-top:22px;text-align:center;">
+      <p style="font-size:15px;color:#777;margin:8px 0 0 0;text-align:center;flex-shrink:0;">
         If you do not wish to participate, please close this window and return your
         submission on Prolific.
       </p>
@@ -1256,7 +1283,7 @@ const guided_intro_2 = {
   stimulus: `
     <div style="max-width:900px;margin:auto;padding:50px 30px;text-align:left;line-height:1.75;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:30px;">And the other two</h1>
-      <p style="font-size:23px;"><strong>Ice cream</strong> is quite different from those three,
+      <p style="font-size:23px;"><strong>Ice</strong> is quite different from those three,
       so it belongs <strong>far away</strong> from them.</p>
       <p style="font-size:23px;">But a <strong>cookie</strong> goes with ice cream — so those two
       belong <strong>close to each other</strong>, and far from the first group.</p>
@@ -1271,28 +1298,25 @@ const guided_intro_2 = {
    NOTE: practice images are passed unshuffled, so they appear in the order
    listed in MINI_PRACTICE_IMAGES. */
 const GUIDED_PRACTICE_STEPS = {
-  "sandwich.jpg": `
-    <p style="margin:0;"><strong>Let's try one together.</strong>
-    Drag each picture onto the grid as it appears.</p>
-    <p style="margin:10px 0 0 0;">Here's a <strong>sandwich</strong>. It's the first picture,
-    so you can place it anywhere.</p>`,
+  "beach.jpg": `
+    <p style="margin:0;"><strong>Let's try one together.</strong> Drag each picture onto
+    the grid as it appears — start with this <strong>beach</strong>, anywhere you like.</p>`,
 
-  "hamburger.jpg": `
-    <p style="margin:0;">A <strong>hamburger</strong> goes with a sandwich —
-    place it <strong style="color:#333;">close to the sandwich</strong>.</p>`,
+  "island.jpg": `
+    <p style="margin:0;">An <strong>island</strong> goes with a beach —
+    place it <strong style="color:#333;">close to the beach</strong>.</p>`,
 
-  "french_fries_1.jpg": `
-    <p style="margin:0;"><strong>French fries</strong> go with those two as well —
-    place them <strong style="color:#333;">close to that group</strong>.</p>`,
-
-  "ice_cream_1.jpg": `
-    <p style="margin:0;"><strong>Ice cream</strong> is different from the first three —
+  "house.jpg": `
+    <p style="margin:0;">A <strong>house</strong> is different from those two —
     place it <strong style="color:#333;">far away</strong> from them.</p>`,
 
-  "cookie.jpg": `
-    <p style="margin:0;">A <strong>cookie</strong> goes with ice cream —
-    place it <strong style="color:#333;">close to the ice cream</strong>,
-    and far from the first group.</p>`
+  "street.jpg": `
+    <p style="margin:0;">A <strong>street</strong> goes with the house —
+    place it <strong style="color:#333;">close to the house</strong>.</p>`,
+
+  "castle.jpg": `
+    <p style="margin:0;">A <strong>castle</strong> goes with the house and street too —
+    place it <strong style="color:#333;">close to that group</strong>.</p>`
 };
 
 const GUIDED_PRACTICE_FINAL = `
@@ -1319,7 +1343,7 @@ const instructions_page_3 = {
   stimulus: `
     <div style="max-width:960px;margin:auto;padding:40px 30px;text-align:left;line-height:1.7;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:28px;">Before You Begin</h1>
-      <p style="font-size:22px;">You'll do a short practice round first so you can get a feel for the task, then complete <strong>${NUM_BLOCKS} blocks of ${TRIALS_PER_BLOCK} arrangements</strong> (${TOTAL_MAIN_TRIALS} in total). Each block focuses on one category of pictures.</p>
+      <p style="font-size:22px;">You'll do a short practice round first so you can get a feel for the task, then arrange <strong>${TOTAL_MAIN_TRIALS} different sets of pictures</strong>.</p>
       <p style="font-size:22px;">Take your time. Once you place a picture, you can still drag it again to adjust it.</p>
       <p style="font-size:22px;">
         When you are <strong>satisfied with your arrangement</strong>, click
@@ -1342,11 +1366,28 @@ function getLeftStartPosition() {
 }
 
 
+/* Fullscreen — must be triggered by a user click (browser requirement).
+   NOTE: the Fullscreen API is unsupported on iPhone Safari; there the
+   button simply advances without entering fullscreen, which is harmless. */
+const enter_fullscreen = {
+  type: jsPsychFullscreen,
+  fullscreen_mode: true,
+  message: `
+    <div style="max-width:820px;margin:auto;text-align:center;line-height:1.7;">
+      <p style="font-size:24px;">This study works best in fullscreen.</p>
+      <p style="font-size:20px;color:#555;">
+        Click below to continue. Please stay in fullscreen until the study ends.
+      </p>
+    </div>`,
+  button_label: "Continue"
+};
+
 const timeline = [
   participant_info_trial,
   preload_trial,
 
   consent_page,
+  enter_fullscreen,
   welcome_page,
 
   instructions_page_1,
@@ -1356,6 +1397,7 @@ const timeline = [
   guided_practice_trial,
 
   wrong_step_1,
+  wrong_step_1b,
   wrong_step_2,
   sorting_correct_page,
 
@@ -1379,22 +1421,22 @@ const demographics_page = {
     <div style="max-width:820px;margin:auto;padding:20px 0 0 0;text-align:left;">
       <h1 style="text-align:center;font-size:30px;margin-bottom:16px;">Survey Questions</h1>
       <p style="font-size:20px;line-height:1.6;">
-        These take about a minute. All questions are optional.
+        These take about a minute. Age is required, and other questions are optional.
       </p>
     </div>
   `,
   html: `
-    <div style="max-width:820px;margin:auto;text-align:left;font-size:20px;line-height:1.9;">
+    <div style="max-width:820px;margin:auto;text-align:left;font-size:20px;line-height:1.9;max-height:58vh;overflow-y:auto;padding:4px 18px 4px 4px;">
 
       <p><label>Age:<br>
-        <input name="age" type="number" min="18" max="120"
+        <input name="age" type="number" min="18" max="120" required
                style="font-size:19px;padding:7px;width:120px;"></label></p>
 
       <p><label>Gender:<br>
-        <select name="gender" style="font-size:19px;padding:7px;">
+        <select name="gender" required style="font-size:19px;padding:7px;">
           <option value="">— select —</option>
-          <option value="woman">Woman</option>
-          <option value="man">Man</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
           <option value="non-binary">Non-binary</option>
           <option value="other">Other / prefer to self-describe</option>
           <option value="no_answer">Prefer not to say</option>
