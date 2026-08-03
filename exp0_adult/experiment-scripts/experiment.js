@@ -997,7 +997,7 @@ const participant_info_trial = {
         stimulus: `
           <div style="max-width:900px;margin:auto;padding:40px;text-align:center;">
             <div style="font-size:30px;margin-bottom:24px;">
-              Next set of pictures
+              Let’s start the next arrangement. Click “Begin” to begin.
             </div>
             <div style="font-size:22px;line-height:1.6;color:#333;">
               Please arrange each set independently.
@@ -1462,6 +1462,15 @@ const demographics_page = {
                style="font-size:19px;padding:7px;width:340px;"></label></p>
 
       <hr style="margin:28px 0;border:none;border-top:1px solid #ddd;">
+
+      <p><strong>Did you use AI tools (e.g., ChatGPT) for any part of this study?</strong><br>
+              <span style="font-size:17px;color:#666;">
+                Your answer will not affect your payment. We only use it to interpret the data correctly.
+              </span><br>
+              <label><input type="radio" name="ai_use" value="none" required> No, I completed it entirely on my own</label><br>
+              <label><input type="radio" name="ai_use" value="some"> I used AI for part of it</label><br>
+              <label><input type="radio" name="ai_use" value="most"> I used AI for most or all of it</label>
+            </p>
 
       <p><strong>How attentive were you while completing the arrangement task?</strong><br>
         <label><input type="radio" name="attentiveness" value="fully"> Fully attentive</label><br>
